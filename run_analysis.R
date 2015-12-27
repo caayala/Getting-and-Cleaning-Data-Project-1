@@ -177,8 +177,8 @@ attributes(dataset_filter$`fBodyBodyGyroJerkMag-std()`)$label 		 <- 'frecuency B
 # From the data set in step 4, creates a second, independent tidy data set with 
 # the average of each variable for each activity and each subject.
 
-dataset_filter %>%
-  group_by(subject, activity) %>%
-  summarise(source = source[1]) %>%
+dataset_mean <- dataset_filter %>%
+  group_by(subject, activity, source) %>%
   summarise_each('mean')
-  print()
+
+write.table(dataset_mean, file = 'dataset_mean.txt', row.name=FALSE)
