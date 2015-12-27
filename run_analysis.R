@@ -25,6 +25,7 @@ if (!file.exists('20Dataset.zip')) {
 
 # Exlore the files in the zip file
 
+## View files inside zip file
 files <- dir('UCI HAR Dataset',  recursive = TRUE)
 
 features <- read_delim('UCI HAR Dataset/features.txt', col_names = FALSE, delim = " ")
@@ -38,38 +39,46 @@ features <- features %>%
 
 table(features$num, features$tot)
 
+## Create unique names for features variables
 features <- features %>%
   ungroup() %>%
   mutate(variable = ifelse(tot > 1, paste0(variable,'-',num), variable))
 
+## Read test data
 subject_test <- read_table('UCI HAR Dataset/test/subject_test.txt', col_names = FALSE)
 X_test <- read_table('UCI HAR Dataset/test/X_test.txt', col_names = FALSE)
 y_test <- read_table('UCI HAR Dataset/test/y_test.txt', col_names = FALSE)
 
 nrow(unique(subject_test))
 
+## Add variable names to columns
 colnames(subject_test) <- 'subject'
 colnames(X_test) <- features$variable
 colnames(y_test) <- 'activity'
 
+## Bind subject and data test database
 test <- bind_cols(subject_test, y_test) %>%
 	mutate(source = 'test') %>%
   bind_cols(X_test)
 
+## Read train data
 subject_train <- read_table('UCI HAR Dataset/train/subject_train.txt', col_names = FALSE)
 X_train <- read_table('UCI HAR Dataset/train/X_train.txt', col_names = FALSE)
 y_train <- read_table('UCI HAR Dataset/train/y_train.txt', col_names = FALSE)
 
 nrow(unique(subject_train))
 
+## Add variable names to columns
 colnames(subject_train) <- 'subject'
 colnames(X_train) <- features$variable
 colnames(y_train) <- 'activity'
 
+## Bind subject and data train database
 train <- bind_cols(subject_train, y_train) %>%
   mutate(source = 'train') %>%
   bind_cols(X_train)
 
+## Bind test and train database
 dataset <- bind_rows(test, train)
 
 # Extracts only the measurements on the mean and standard deviation for each measurement. 
@@ -95,8 +104,7 @@ table(dataset_filter$source)
 
 # Appropriately labels the data set with descriptive variable names. 
 
-# Set labels for mean varabiables
-
+## Set labels for mean varabiables
 attributes(dataset_filter$`tBodyAcc-mean()-X`)$label <- 'time Body Accelerometer X-axial signal - mean'
 attributes(dataset_filter$`tBodyAcc-mean()-Y`)$label <- 'time Body Accelerometer Y-axial signal - mean'
 attributes(dataset_filter$`tBodyAcc-mean()-Z`)$label <- 'time Body Accelerometer Z-axial signal - mean'
@@ -131,8 +139,7 @@ attributes(dataset_filter$`fBodyBodyAccJerkMag-mean()`)$label 		 <- 'frecuency B
 attributes(dataset_filter$`fBodyBodyGyroMag-mean()`)$label 		 <- 'frecuency Body Gyroscope magnitude signal - mean'
 attributes(dataset_filter$`fBodyBodyGyroJerkMag-mean()`)$label 		 <- 'frecuency Body Gyroscope Jerk magnitude signal - mean'
 
-# Set labels for Standard deviation varabiables
-
+## Set labels for Standard deviation varabiables
 attributes(dataset_filter$`tBodyAcc-std()-X`)$label <- 'time Body Accelerometer X-axial signal - Standard deviation'
 attributes(dataset_filter$`tBodyAcc-std()-Y`)$label <- 'time Body Accelerometer Y-axial signal - Standard deviation'
 attributes(dataset_filter$`tBodyAcc-std()-Z`)$label <- 'time Body Accelerometer Z-axial signal - Standard deviation'
